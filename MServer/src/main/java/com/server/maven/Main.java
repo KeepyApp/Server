@@ -10,6 +10,7 @@ public class Main {
         SpringApplication.run(Main.class, args);
         Gson gson = new Gson();
         System.out.println(gson.toJson("Hello Json"));
+        System.out.println(gson.toJson("ck"));
     }
 
 }
