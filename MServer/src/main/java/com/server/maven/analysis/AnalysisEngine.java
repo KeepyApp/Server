@@ -1,14 +1,16 @@
 package com.server.maven.analysis;
 
 import com.server.maven.alert.AlertManager;
+import org.springframework.stereotype.Component;
 
+
+@Component
 public class AnalysisEngine {
     private AlertManager alertManager;
 
     public AnalysisEngine(AlertManager alertManager) {
         this.alertManager = alertManager;
     }
-
     public void analyzeData(String data) {
         // Analyze the processed data to identify unusual events
         // Determine severity and type of each event
