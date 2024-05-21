@@ -1,8 +1,10 @@
 package com.server.maven;
 
+
 import com.google.gson.Gson;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
 public class Main {
@@ -10,7 +12,6 @@ public class Main {
         SpringApplication.run(Main.class, args);
         Gson gson = new Gson();
         System.out.println(gson.toJson("Hello Json"));
-        System.out.println(gson.toJson("ck"));
     }
 
 }
