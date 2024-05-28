@@ -25,7 +25,6 @@ public class MainController {
     @PostMapping("/process-data")
     public void processData(@RequestBody String jsonData) {
         System.out.println("Received data from Python script: " + jsonData);
-
         //String idToken = ""; // TODO: Get the ID token from the request
 
 //        if (!firebaseAuthManager.authenticateUser(idToken)) {
