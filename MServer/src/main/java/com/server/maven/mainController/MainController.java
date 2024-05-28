@@ -2,7 +2,7 @@ package com.server.maven.mainController;
 
 import com.server.maven.alert.AlertManager;
 import com.server.maven.database.DatabaseManager;
-//import com.server.maven.firebase.FirebaseAuthManager;
+import com.server.maven.firebase.FirebaseAuthManager;
 import com.server.maven.kinderGarten.Kindergarten;
 import com.server.maven.kinderGarten.KindergartenManager;
 import org.springframework.web.bind.annotation.*;
@@ -10,20 +10,14 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class MainController {
     private final DatabaseManager databaseManager;
-    //private final FirebaseAuthManager firebaseAuthManager;
+    private final FirebaseAuthManager firebaseAuthManager;
     private final AlertManager alertManager;
     private final KindergartenManager kindergartenManager;
 
-//    public MainController(DatabaseManager databaseManager, FirebaseAuthManager firebaseAuthManager,
-//                          AlertManager alertManager, KindergartenManager kindergartenManager) {
-//        this.databaseManager = databaseManager;
-//        this.firebaseAuthManager = firebaseAuthManager;
-//        this.alertManager = alertManager;
-//        this.kindergartenManager = kindergartenManager;
-//    }
-    public MainController(DatabaseManager databaseManager,
+    public MainController(DatabaseManager databaseManager, FirebaseAuthManager firebaseAuthManager,
                           AlertManager alertManager, KindergartenManager kindergartenManager) {
         this.databaseManager = databaseManager;
+        this.firebaseAuthManager = firebaseAuthManager;
         this.alertManager = alertManager;
         this.kindergartenManager = kindergartenManager;
     }
@@ -44,6 +38,6 @@ public class MainController {
         Kindergarten kindergarten = kindergartenManager.findTheRelevantKinderGarten(jsonData);
         String parentId = kindergarten.getParentID();
 
-        alertManager.sendAlert(parentId, kindergarten, jsonData);
+        //alertManager.sendAlert(parentId, kindergarten, jsonData);
     }
 }
