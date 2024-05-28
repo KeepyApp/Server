@@ -1,7 +1,9 @@
 package com.server.maven.kinderGarten;
 
+import org.springframework.stereotype.Service;
 import java.util.Map;
 
+@Service
 public class KindergartenManager {
     private Map<String, Kindergarten> kindergartens;
 
@@ -10,7 +12,7 @@ public class KindergartenManager {
     }
 
     public Kindergarten findTheRelevantKinderGarten(String jsonData) {
-        return new Kindergarten("Shoshana");
+        return new Kindergarten();
     }
 
     public Map<String, Kindergarten> getKindergartens() {
@@ -21,4 +23,3 @@ public class KindergartenManager {
         this.kindergartens = kindergartens;
     }
 }
-

@@ -27,12 +27,6 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-        <!-- Spring Boot Starter Security for security configuration -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
-        </dependency>
-
         <!-- Gson for JSON processing -->
         <dependency>
             <groupId>com.google.code.gson</groupId>
@@ -46,6 +40,7 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+
 
         <dependency>
             <groupId>com.google.firebase</groupId>
