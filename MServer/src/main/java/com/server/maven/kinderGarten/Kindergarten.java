@@ -1,18 +1,24 @@
 package com.server.maven.kinderGarten;
 
 import com.server.maven.eventHistory.EventHistoryManager;
+import org.springframework.stereotype.Component;
 
+@Component
 public class Kindergarten {
     private String kindergartenName;
     private String parentID;
     private String password;
     private EventHistoryManager eventHistoryManager;
 
-    public Kindergarten(String kindergartenName) {
-        this.kindergartenName = kindergartenName;
-        this.parentID = parentID;
-        this.password = password;
-        this.eventHistoryManager = eventHistoryManager;
+//    public Kindergarten(String kindergartenName, String parentID, String password) {
+//        this.kindergartenName = kindergartenName;
+//        this.parentID = parentID;
+//        this.password = password;
+//    }
+    public Kindergarten() {
+        this.kindergartenName = "Ruth";
+        this.parentID = "11123";
+        this.password = "555555";
     }
 
     public String getParentID() {

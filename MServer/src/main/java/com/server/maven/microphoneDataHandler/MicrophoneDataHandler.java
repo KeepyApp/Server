@@ -24,6 +24,7 @@
 //        System.out.println("Received data from Python script: " + jsonData);
 //
 //        // Send notification
+
 //        sendNotification("FCM-Device-Token", "Alert", "There is something unusual");
 //
 //        alertManager.sendAlert("Taird", kindergarten, "There is something unusual");
