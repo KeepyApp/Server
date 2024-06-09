@@ -1,21 +1,52 @@
 package com.server.maven.firebase;
 
-import java.io.IOException;
-import java.io.InputStream;
 import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.firestore.Firestore;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
-import org.springframework.core.io.ClassPathResource;
+import com.google.firebase.cloud.FirestoreClient;
+import com.google.firebase.messaging.FirebaseMessaging;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+import java.io.IOException;
+import java.io.InputStream;
+
+@Component
 public class FirebaseInitializer {
-    public static void initialize() throws IOException {
-        ClassPathResource serviceAccount = new ClassPathResource("C:\\Users\\taird\\Desktop\\Server\\MServer\\src\\main\\resources\\keppy-5ed11-firebase-adminsdk-50u8y-b7b3f50796.json");
-        InputStream serviceAccountStream = serviceAccount.getInputStream();
 
-        FirebaseOptions options = FirebaseOptions.builder()
-                .setCredentials(GoogleCredentials.fromStream(serviceAccountStream))
-                .build();
+    private static final Logger logger = LoggerFactory.getLogger(FirebaseInitializer.class);
 
-        FirebaseApp.initializeApp(options);
+    @PostConstruct
+    public void initialize() {
+        try (InputStream serviceAccount = getClass().getClassLoader().getResourceAsStream("serviceAccountKey.json")) {
+            if (serviceAccount == null) {
+                throw new IllegalStateException("Service account key file not found");
+            }
+
+            FirebaseOptions options = new FirebaseOptions.Builder()
+                    .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+                    .build();
+
+            if (FirebaseApp.getApps().isEmpty()) {
+                FirebaseApp app = FirebaseApp.initializeApp(options);
+                if (app == null) {
+                    throw new RuntimeException("Failed to initialize FirebaseApp");
+                }
+            }
+
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to initialize Firebase", e);
+        }
+    }
+
+    public static Firestore getFirestore() {
+        return FirestoreClient.getFirestore();
+    }
+
+    public static FirebaseMessaging getFirebaseMessaging() {
+        return FirebaseMessaging.getInstance();
     }
 }

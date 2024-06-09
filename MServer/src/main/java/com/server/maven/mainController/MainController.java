@@ -1,25 +1,46 @@
 package com.server.maven.mainController;
 
+
 import com.server.maven.alert.AlertManager;
-import com.server.maven.database.DatabaseManager;
-import com.server.maven.firebase.FirebaseAuthManager;
 import com.server.maven.kinderGarten.Kindergarten;
 import com.server.maven.kinderGarten.KindergartenManager;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class MainController {
-    private final DatabaseManager databaseManager;
-    private final FirebaseAuthManager firebaseAuthManager;
+    //private final FirebaseAuthManager firebaseAuthManager;
     private final AlertManager alertManager;
     private final KindergartenManager kindergartenManager;
 
-    public MainController(DatabaseManager databaseManager, FirebaseAuthManager firebaseAuthManager,
-                          AlertManager alertManager, KindergartenManager kindergartenManager) {
-        this.databaseManager = databaseManager;
-        this.firebaseAuthManager = firebaseAuthManager;
-        this.alertManager = alertManager;
-        this.kindergartenManager = kindergartenManager;
+    public MainController() {
+
+        //this.firebaseAuthManager = firebaseAuthManager;
+        this.alertManager = new AlertManager();
+        this.kindergartenManager = new KindergartenManager();
+    }
+
+
+    public static class TokenRequest {
+        private String parentId;
+        private String token;
+
+        public String getParentId() {
+            return parentId;
+        }
+
+        public void setParentId(String parentId) {
+            this.parentId = parentId;
+        }
+
+        public String getToken() {
+            return token;
+        }
+
+        public void setToken(String token) {
+            this.token = token;
+        }
     }
 
     @PostMapping("/process-data")
@@ -38,6 +59,32 @@ public class MainController {
         Kindergarten kindergarten = kindergartenManager.findTheRelevantKinderGarten(jsonData);
         String parentId = kindergarten.getParentID();
 
-        //alertManager.sendAlert(parentId, kindergarten, jsonData);
+
+         //alertManager.processEvent(parentId, kindergarten.getKindergartenName());
+        alertManager.processEvent("0000000000", "oren");
     }
+
+
+   // @PostMapping("/process-token")
+   // public void processToken(@RequestBody TokenRequest tokenRequest) {
+   //     System.out.println("Received token from client: " + tokenRequest.getToken());
+        // Your logic to handle the token
+   //     alertManager.addToken(tokenRequest.getParentId(), tokenRequest.getToken());
+  //  }
+
+    @PostMapping("/process-token")
+    public ResponseEntity<Void> processToken(@RequestBody TokenRequest tokenRequest) {
+        try {
+            System.out.println("Received token from client: " + tokenRequest.getToken());
+            // Your logic to handle the token
+            alertManager.addToken(tokenRequest.getParentId(), tokenRequest.getToken());
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            e.printStackTrace();  // Log the exception details
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+
+
 }

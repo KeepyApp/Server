@@ -13,14 +13,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class FirebaseAuthManager {
 
-    private final FirebaseAuth firebaseAuth;
+    /*private final FirebaseAuth firebaseAuth;
 
     /**
      * Constructs a new FirebaseAuthManager with the provided FirebaseApp.
      *
      * @param firebaseApp The FirebaseApp instance to use for authentication.
      */
-    @Autowired
+    /*@Autowired
     public FirebaseAuthManager(FirebaseApp firebaseApp) {
         this.firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
     }
@@ -31,7 +31,7 @@ public class FirebaseAuthManager {
      * @param idToken The ID token of the user to authenticate.
      * @return true if the user is authenticated, false otherwise.
      */
-    public boolean authenticateUser(String idToken) {
+   /* public boolean authenticateUser(String idToken) {
         try {
             FirebaseToken decodedToken = firebaseAuth.verifyIdToken(idToken);
             return decodedToken != null;
@@ -47,7 +47,7 @@ public class FirebaseAuthManager {
      * @param idToken The ID token of the user.
      * @return The UID (user ID) of the authenticated user, or null if authentication fails.
      */
-    public String fetchUserInfo(String idToken) {
+   /* public String fetchUserInfo(String idToken) {
         try {
             FirebaseToken decodedToken = firebaseAuth.verifyIdToken(idToken);
             return decodedToken.getUid();
@@ -55,5 +55,5 @@ public class FirebaseAuthManager {
             e.printStackTrace();
             return null;
         }
-    }
+    }*/
 }
