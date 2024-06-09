@@ -7,6 +7,9 @@ import java.util.Map;
 public class KindergartenManager {
     private Map<String, Kindergarten> kindergartens;
 
+    public KindergartenManager() {
+        kindergartens = null;
+    }
     public KindergartenManager(Map<String, Kindergarten> kindergartens) {
         this.kindergartens = kindergartens;
     }

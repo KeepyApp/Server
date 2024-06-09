@@ -1,38 +1,65 @@
 package com.server.maven.alert;
 
-import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.Message;
-import com.google.firebase.messaging.Notification;
+import com.server.maven.firebase.NotificationService;
 import com.server.maven.kinderGarten.Kindergarten;
 import org.springframework.stereotype.Component;
 
+import java.util.concurrent.ConcurrentHashMap;
+
 @Component
 public class AlertManager {
+
+    private final NotificationService notificationService;
+    private final ConcurrentHashMap<String, String> userTokens;
+
+    public AlertManager() {
+        this.notificationService = new NotificationService();
+        this.userTokens = new ConcurrentHashMap<>();
+    }
+
     public void sendAlert(String recipient, Kindergarten kindergarten, String message) {
-        // Send alert to the specified recipient through appropriate channel
         System.out.println("Alert sent to " + recipient + ": " + message);
 
-        // Example token, replace with actual device token
-        String token = "FCM-Device-Token";
-        sendNotification(token, "Alert", "There is something unusual");
+        String token = userTokens.get(recipient);
+        if (token != null) {
+            sendNotification(token, "Alert", "There is something unusual");
+        } else {
+            System.out.println("No token found for recipient: " + recipient);
+        }
+    }
+
+//    public void processEvent(String parentId, String kindergartenName) {
+//        // Fetch the parent's FCM token from Firestore
+//        Firestore db = FirebaseInitializer.getFirestore();
+//        db.collection("users").document(parentId).get().addOnSuccessListener(documentSnapshot -> {
+//            if (documentSnapshot.exists()) {
+//                String token = documentSnapshot.getString("deviceToken");
+//                String title = "Unusual Sound Detected";
+//                String body = "An unusual sound was detected in " + kindergartenName;
+//                notificationService.sendNotification(token, title, body);
+//            }
+//        }).addOnFailureListener(e -> {
+//            e.printStackTrace();
+// });
+//}
+
+
+    public void processEvent(String parentId, String kindergartenName) {
+        String token = userTokens.get(parentId);
+        if (token != null) {
+            String title = "Unusual Sound Detected";
+            String body = "An unusual sound was detected in " + kindergartenName;
+            notificationService.sendNotification(token, title, body);
+        } else {
+            System.out.println("No token found for parent ID: " + parentId);
+        }
+    }
+
+    public void addToken(String parentId, String token) {
+        userTokens.put(parentId, token);
     }
 
     public void sendNotification(String token, String title, String body) {
-        Notification notification = Notification.builder()
-                .setTitle(title)
-                .setBody(body)
-                .build();
-
-        Message message = Message.builder()
-                .setNotification(notification)
-                .setToken(token)
-                .build();
-
-        try {
-            String response = FirebaseMessaging.getInstance().send(message);
-            System.out.println("Successfully sent message: " + response);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        notificationService.sendNotification(token, title, body);
     }
 }
