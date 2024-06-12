@@ -61,7 +61,8 @@ public class MainController {
 
 
          //alertManager.processEvent(parentId, kindergarten.getKindergartenName());
-        alertManager.processEvent("0000000000", "oren");
+     //   alertManager.processEvent("0000000000", "oren");
+        alertManager.processEvent("1111111111", "oren", jsonData);
     }
 
 

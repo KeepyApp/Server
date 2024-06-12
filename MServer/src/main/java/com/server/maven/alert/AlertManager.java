@@ -44,11 +44,12 @@ public class AlertManager {
 //}
 
 
-    public void processEvent(String parentId, String kindergartenName) {
+    public void processEvent(String parentId, String kindergartenName, String jsonData) {
         String token = userTokens.get(parentId);
         if (token != null) {
             String title = "Unusual Sound Detected";
             String body = "An unusual sound was detected in " + kindergartenName;
+                   // + "\nThe unusual word said in kindergarten is " + jsonData;
             notificationService.sendNotification(token, title, body);
         } else {
             System.out.println("No token found for parent ID: " + parentId);
