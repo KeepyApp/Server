@@ -1,1 +1,71 @@
+Sound Surveillance: Protecting Children with Voice Anomaly Detection
+System Description
+The software is designed to detect unusual voices in kindergartens, including crying, specific shouts, cursing and being beaten by adults in charge. It promptly alerts the relevant authorities when such events occur. 
+
+Features
+1.	Detecting Unusual Sounds: The software identifies crying, specific shouts, cursing and hitting.
+2.	Immediate Alert: Upon detecting an unusual event, the software sends an immediate alert to the responsible adult in the kindergarten or the parent on duty.
+3.	Archive: Users can view the history of events and previous alerts.
+4.	Audio-Visual Feature: The system presents sound vibrations in a graphical display throughout the kindergarten's activity hours.
+5.	Automatic Activation of Security Cameras: Optional feature to activate security cameras in the kindergarten if necessary.
+
+Scenarios
+•	Child Crying Non-Stop: The software detects prolonged crying (over three minutes) and raises an alert.
+•	Inappropriate Adult Expression: The software identifies cursing and raises a flag.
+•	Hitting/ Beating: Detection of physical harm.
+•	Abnormal Adult Voice Volume: Identifying instances where an adult raises their voice excessively.
+System Components
+Server Side
+1.	Voice Reception from Microphone
+•	The kindergarten's microphone transmits voice data to the server.
+2.	Detection and Alerting Process
+•	The server employs a voice recognition engine to identify abnormal events, sending immediate alerts to the parent application.
+3.	Information Management and Database
+•	Manages information, including parent and kindergarten details, voice events, and history.
+•	Enables quick access to database data for processing, presentation, and archiving.
+4.	Communication with Warning System
+•	Informs parents about unusual events through the warning system.
+5.	Management of the Entire System
+•	Manages overall system operations, including user management, permissions, and events.
+
+
+
+
+
+
+
+Client Side
+1.	Parent Application
+•	Parents open the app, log in, and identify the relevant kindergarten.
+•	The system checks compatibility, and if compatible, parents receive details and alerts about unusual events.
+2.	Microphone in the Kindergarten
+•	Provides voice input for the system's analysis and event identification.
+
+Database
+Used for storing parent and kindergarten details, audio events, history, and more.
+1.	Parents' Details
+•	Records include name, phone number, and relevant information.
+•	Parents' data is securely kept and accessible only to the administrator system.
+2.	Kindergarten Details
+•	Records include kindergarten name, address, administrator details, and other relevant information.
+3.	Events Recorded in the System
+•	Records unusual voice events, including time, type, and other relevant data.
+4.	History
+•	Keeps a detailed record of all previous voice events for analysis and reporting.
+
+Central Flow
+1.	Microphone Records Audio and Sends to Server
+•	The kindergarten's microphone records environmental sounds and sends them to the server in digital format.
+2.	Server Uses Voice Recognition Engine to Detect Unusual Events
+•	Utilizes advanced algorithms to identify unusual calls, crying, cursing, and hitting.
+3.	In Case of Identification
+•	Sends an immediate alert to the parent application with details about the event and action options.
+4.	Parent Receives Warning
+•	Receives immediate warning in the application with detailed information about the event.
+5.	Parent Can View Event History and Manage App Access/ Settings.
+
+External Tools and Libraries
+•	Client Side: React Native for Android app development.
+•	Server Side: Python with libraries like SpeechRecognition and PyAudio for voice recognition, and additional libraries like Flask for developing the communication server.
+
 
