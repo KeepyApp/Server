@@ -1,12 +1,18 @@
 package com.server.maven.mainController;
 
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.server.maven.alert.AlertManager;
 import com.server.maven.kinderGarten.Kindergarten;
 import com.server.maven.kinderGarten.KindergartenManager;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.io.IOException;
 
 @RestController
 public class MainController {
@@ -43,7 +49,7 @@ public class MainController {
         }
     }
 
-    @PostMapping("/process-data")
+    /*@PostMapping("/process-data")
     public void processData(@RequestBody String jsonData) {
         System.out.println("Received data from Python script: " + jsonData);
         //String idToken = ""; // TODO: Get the ID token from the request
@@ -56,22 +62,48 @@ public class MainController {
         //String userId = firebaseAuthManager.fetchUserInfo(idToken);
         //System.out.println("User ID: " + userId);
 
-        Kindergarten kindergarten = kindergartenManager.findTheRelevantKinderGarten(jsonData);
+        Kindergarten kindergarten = kindergartenManager.findTheRelevantKindergarten(jsonData);
         String parentId = kindergarten.getParentID();
 
+        alertManager.processEvent("0525867338", "tali", jsonData);
+    }
+*/
+    @PostMapping("/process-data")
+    public void processData(@RequestBody String jsonData) {
+        System.out.println("Received data from Python script: " + jsonData);
 
-         //alertManager.processEvent(parentId, kindergarten.getKindergartenName());
-     //   alertManager.processEvent("0000000000", "oren");
-        alertManager.processEvent("1111111111", "oren", jsonData);
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonNode = objectMapper.readTree(jsonData);
+
+            printEventDetails(jsonNode);
+
+            // עיבוד נוסף כמו אחזור גן ילדים ושליחת התראה
+          // Kindergarten kindergarten = kindergartenManager.findTheRelevantKinderGarten(jsonData);
+           // String parentId = kindergarten.getParentID();
+
+           alertManager.processEvent("0525867338", "tali", jsonNode);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
+    private static void printEventDetails(JsonNode jsonNode) {
+        String event = jsonNode.get("event").asText();
+        String timestamp = jsonNode.get("timestamp").asText();
+        String word = jsonNode.has("word") ? jsonNode.get("word").asText() : null;
+        String sentence = jsonNode.has("sentence") ? jsonNode.get("sentence").asText() : null;
 
-   // @PostMapping("/process-token")
-   // public void processToken(@RequestBody TokenRequest tokenRequest) {
-   //     System.out.println("Received token from client: " + tokenRequest.getToken());
-        // Your logic to handle the token
-   //     alertManager.addToken(tokenRequest.getParentId(), tokenRequest.getToken());
-  //  }
+        System.out.println("Event: " + event);
+        System.out.println("Timestamp: " + timestamp);
+        if (word != null) {
+            System.out.println("Word: " + word);
+        }
+        if (sentence != null) {
+            System.out.println("Sentence: " + sentence);
+        }
+    }
 
     @PostMapping("/process-token")
     public ResponseEntity<Void> processToken(@RequestBody TokenRequest tokenRequest) {
@@ -86,6 +118,26 @@ public class MainController {
         }
     }
 
+    @PostMapping("/upload-audio")
+    public ResponseEntity<String> uploadAudio(@RequestParam("file") MultipartFile file) {
+        try {
+            // שמירת הקובץ בתיקייה מקומית
+            String uploadDir = System.getProperty("java.io.tmpdir") + "/uploaded_audio_files/";
+            File uploadFolder = new File(uploadDir);
+            if (!uploadFolder.exists()) {
+                uploadFolder.mkdirs();
+            }
+
+            File uploadedFile = new File(uploadDir + file.getOriginalFilename());
+            file.transferTo(uploadedFile);
+
+            System.out.println("Audio file uploaded successfully: " + uploadedFile.getPath());
+            return ResponseEntity.ok("File uploaded successfully");
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to upload file");
+        }
+    }
 
 
 }

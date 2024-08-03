@@ -1,5 +1,6 @@
 package com.server.maven.alert;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.server.maven.firebase.NotificationService;
 import com.server.maven.kinderGarten.Kindergarten;
 import org.springframework.stereotype.Component;
@@ -44,17 +45,24 @@ public class AlertManager {
 //}
 
 
-    public void processEvent(String parentId, String kindergartenName, String jsonData) {
+    public void processEvent(String parentId, String kindergartenName, JsonNode jsonNode) {
         String token = userTokens.get(parentId);
         if (token != null) {
-            String title = "Unusual Sound Detected";
-            String body = "An unusual sound was detected in " + kindergartenName;
-                   // + "\nThe unusual word said in kindergarten is " + jsonData;
-            notificationService.sendNotification(token, title, body);
+            String event = jsonNode.get("event").asText();
+            String timestamp = jsonNode.get("timestamp").asText();
+
+            String title = "Unusual Event Detected";
+            StringBuilder body = new StringBuilder();
+            body.append("An unusual sound was detected in ").append(kindergartenName).append(" at ").append(timestamp).append(".\n");
+            body.append("Event Type: ").append(event).append(".\n");
+
+
+            notificationService.sendNotification(token, title, body.toString());
         } else {
             System.out.println("No token found for parent ID: " + parentId);
         }
     }
+
 
     public void addToken(String parentId, String token) {
         userTokens.put(parentId, token);
