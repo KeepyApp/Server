@@ -16,7 +16,7 @@ import java.io.IOException;
 
 @RestController
 public class MainController {
-    //private final FirebaseAuthManager firebaseAuthManager;
+
     private final AlertManager alertManager;
     private final KindergartenManager kindergartenManager;
 
