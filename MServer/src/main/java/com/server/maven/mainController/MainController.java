@@ -3,7 +3,9 @@ package com.server.maven.mainController;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.firebase.cloud.StorageClient;
 import com.server.maven.alert.AlertManager;
+import com.server.maven.firebase.FirebaseInitializer;
 import com.server.maven.kinderGarten.Kindergarten;
 import com.server.maven.kinderGarten.KindergartenManager;
 import org.springframework.http.HttpStatus;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 
 @RestController
@@ -121,6 +124,31 @@ public class MainController {
     @PostMapping("/upload-audio")
     public ResponseEntity<String> uploadAudio(@RequestParam("file") MultipartFile file) {
         try {
+            // Save the file temporarily
+            String uploadDir = System.getProperty("java.io.tmpdir") + "/uploaded_audio_files/";
+            File uploadFolder = new File(uploadDir);
+            if (!uploadFolder.exists()) {
+                uploadFolder.mkdirs();
+            }
+
+            File uploadedFile = new File(uploadDir + file.getOriginalFilename());
+            file.transferTo(uploadedFile);
+
+            // Upload the file to Firebase Storage
+            StorageClient storageClient = FirebaseInitializer.getStorageClient();
+            storageClient.bucket().create(file.getOriginalFilename(), new FileInputStream(uploadedFile), file.getContentType());
+
+            System.out.println("Audio file uploaded successfully to Firebase Storage: " + uploadedFile.getPath());
+            return ResponseEntity.ok("File uploaded successfully to Firebase Storage");
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to upload file");
+        }
+    }
+
+   /* @PostMapping("/upload-audio")
+    public ResponseEntity<String> uploadAudio(@RequestParam("file") MultipartFile file) {
+        try {
             // שמירת הקובץ בתיקייה מקומית
             String uploadDir = System.getProperty("java.io.tmpdir") + "/uploaded_audio_files/";
             File uploadFolder = new File(uploadDir);
@@ -137,7 +165,7 @@ public class MainController {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to upload file");
         }
-    }
+    }*/
 
 
 }

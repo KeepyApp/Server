@@ -51,11 +51,9 @@ public class AlertManager {
             String event = jsonNode.get("event").asText();
             String timestamp = jsonNode.get("timestamp").asText();
 
-            String title = "Unusual Event Detected";
+            String title = "Event Type: " + event ;
             StringBuilder body = new StringBuilder();
             body.append("An unusual sound was detected in ").append(kindergartenName).append(" at ").append(timestamp).append(".\n");
-            body.append("Event Type: ").append(event).append(".\n");
-
 
             notificationService.sendNotification(token, title, body.toString());
         } else {

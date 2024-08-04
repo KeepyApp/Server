@@ -5,6 +5,7 @@ import com.google.cloud.firestore.Firestore;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.cloud.FirestoreClient;
+import com.google.firebase.cloud.StorageClient;
 import com.google.firebase.messaging.FirebaseMessaging;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +29,7 @@ public class FirebaseInitializer {
 
             FirebaseOptions options = new FirebaseOptions.Builder()
                     .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+                    .setStorageBucket("keppy-5ed11.appspot.com")  // Add your bucket name here
                     .build();
 
             if (FirebaseApp.getApps().isEmpty()) {
@@ -48,5 +50,9 @@ public class FirebaseInitializer {
 
     public static FirebaseMessaging getFirebaseMessaging() {
         return FirebaseMessaging.getInstance();
+    }
+
+    public static StorageClient getStorageClient() {
+        return StorageClient.getInstance();
     }
 }
