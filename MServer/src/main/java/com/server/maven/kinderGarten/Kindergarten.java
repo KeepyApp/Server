@@ -1,6 +1,6 @@
 package com.server.maven.kinderGarten;
 
-import com.server.maven.eventHistory.EventHistoryManager;
+import com.server.maven.eventHistory.EventsManager;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -8,17 +8,18 @@ public class Kindergarten {
     private String kindergartenName;
     private String parentID;
     private String password;
-    private EventHistoryManager eventHistoryManager;
+    private EventsManager events;
 
-//    public Kindergarten(String kindergartenName, String parentID, String password) {
-//        this.kindergartenName = kindergartenName;
-//        this.parentID = parentID;
-//        this.password = password;
-//    }
     public Kindergarten() {
-        this.kindergartenName = "Ruth";
-        this.parentID = "11123";
-        this.password = "555555";
+        this.events = new EventsManager();
+    }
+
+    public String getKindergartenName() {
+        return kindergartenName;
+    }
+
+    public void setKindergartenName(String kindergartenName) {
+        this.kindergartenName = kindergartenName;
     }
 
     public String getParentID() {
@@ -29,11 +30,18 @@ public class Kindergarten {
         this.parentID = parentID;
     }
 
-    public String getKindergartenName() {
-        return kindergartenName;
+    public String getPassword() {
+        return password;
     }
 
-    public void setKindergartenName(String kindergartenName) {
-        this.kindergartenName = kindergartenName;
+    public void setPassword(String password) {
+        this.password = password;
+    }
+    public EventsManager getEvents() {
+        return events;
+    }
+
+    public void setEvents(EventsManager events) {
+        this.events = events;
     }
 }

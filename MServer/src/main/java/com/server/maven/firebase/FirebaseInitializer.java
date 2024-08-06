@@ -6,7 +6,10 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.cloud.FirestoreClient;
 import com.google.firebase.cloud.StorageClient;
+import com.google.firebase.database.*;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.server.maven.kinderGarten.Kindergarten;
+import com.server.maven.kinderGarten.KindergartenManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -14,12 +17,14 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 public class FirebaseInitializer {
 
     private static final Logger logger = LoggerFactory.getLogger(FirebaseInitializer.class);
-
+    private static final String DATABASE_URL = "https://keppy-5ed11.firebaseio.com/";
     @PostConstruct
     public void initialize() {
         try (InputStream serviceAccount = getClass().getClassLoader().getResourceAsStream("serviceAccountKey.json")) {
@@ -55,4 +60,9 @@ public class FirebaseInitializer {
     public static StorageClient getStorageClient() {
         return StorageClient.getInstance();
     }
+
+    public static DatabaseReference getRealtimeDatabase() {
+        return FirebaseDatabase.getInstance(DATABASE_URL).getReference();
+    }
+
 }

@@ -2,7 +2,7 @@ package com.server.maven.mainController;
 
 public enum EventType {
     CRYING,
-    SHOUTING,
+    INAPPROPRIATE_SENTENCE,
     CURSING,
     HITTING
 }

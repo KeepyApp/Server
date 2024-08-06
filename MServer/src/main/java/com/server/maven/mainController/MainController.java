@@ -1,13 +1,16 @@
 package com.server.maven.mainController;
 
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.cloud.StorageClient;
 import com.server.maven.alert.AlertManager;
 import com.server.maven.firebase.FirebaseInitializer;
 import com.server.maven.kinderGarten.Kindergarten;
 import com.server.maven.kinderGarten.KindergartenManager;
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,20 +19,27 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 public class MainController {
 
     private final AlertManager alertManager;
     private final KindergartenManager kindergartenManager;
+    private final FirebaseDatabase firebaseDatabase;
 
-    public MainController() {
-
-        //this.firebaseAuthManager = firebaseAuthManager;
+    @Autowired
+    public MainController(KindergartenManager kindergartenManager) {
         this.alertManager = new AlertManager();
-        this.kindergartenManager = new KindergartenManager();
+        this.kindergartenManager = kindergartenManager;
+        this.firebaseDatabase = FirebaseDatabase.getInstance("https://keppy-5ed11.firebaseio.com/");
     }
 
+    @PostConstruct
+    public void init() {
+        kindergartenManager.updateKindergartenManager();
+    }
 
     public static class TokenRequest {
         private String parentId;
@@ -52,25 +62,6 @@ public class MainController {
         }
     }
 
-    /*@PostMapping("/process-data")
-    public void processData(@RequestBody String jsonData) {
-        System.out.println("Received data from Python script: " + jsonData);
-        //String idToken = ""; // TODO: Get the ID token from the request
-
-//        if (!firebaseAuthManager.authenticateUser(idToken)) {
-//            System.out.println("Authentication failed. Invalid ID token.");
-//            return;
-//        }
-
-        //String userId = firebaseAuthManager.fetchUserInfo(idToken);
-        //System.out.println("User ID: " + userId);
-
-        Kindergarten kindergarten = kindergartenManager.findTheRelevantKindergarten(jsonData);
-        String parentId = kindergarten.getParentID();
-
-        alertManager.processEvent("0525867338", "tali", jsonData);
-    }
-*/
     @PostMapping("/process-data")
     public void processData(@RequestBody String jsonData) {
         System.out.println("Received data from Python script: " + jsonData);
@@ -80,26 +71,51 @@ public class MainController {
             JsonNode jsonNode = objectMapper.readTree(jsonData);
 
             printEventDetails(jsonNode);
-
-            // עיבוד נוסף כמו אחזור גן ילדים ושליחת התראה
-          // Kindergarten kindergarten = kindergartenManager.findTheRelevantKinderGarten(jsonData);
-           // String parentId = kindergarten.getParentID();
-
-           alertManager.processEvent("0525867338", "tali", jsonNode);
+            String kindergartenName = jsonNode.get("kindergarten_name").asText();
+            kindergartenManager.updateKindergartenManager();
+            Kindergarten kindergarten = kindergartenManager.findTheRelevantKinderGarten(kindergartenName);
+            if (kindergarten != null) {
+                String parentId = kindergarten.getParentID();
+                alertManager.processEvent(parentId, kindergartenName, jsonNode);
+                saveEventToFirebase(kindergartenName, jsonNode);
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
+    private void saveEventToFirebase(String kindergartenName, JsonNode eventData) {
+        DatabaseReference ref = firebaseDatabase.getReference("kindergartens").child(kindergartenName).child("events");
+        String eventId = eventData.get("id").asText();
+
+        Map<String, Object> eventDetails = new HashMap<>();
+        eventDetails.put("event", eventData.get("event").asText());
+        eventDetails.put("timestamp", eventData.get("timestamp").asText());
+        eventDetails.put("id", eventId);
+        eventDetails.put("kindergarten_name", eventData.get("kindergarten_name").asText());
+        if (eventData.has("word")) {
+            eventDetails.put("word", eventData.get("word").asText());
+        }
+        if (eventData.has("sentence")) {
+            eventDetails.put("sentence", eventData.get("sentence").asText());
+        }
+
+        ref.child(eventId).setValueAsync(eventDetails);
+    }
+
     private static void printEventDetails(JsonNode jsonNode) {
         String event = jsonNode.get("event").asText();
         String timestamp = jsonNode.get("timestamp").asText();
+        String id = jsonNode.get("id").asText();
+        String kindergartenName = jsonNode.get("kindergarten_name").asText();
         String word = jsonNode.has("word") ? jsonNode.get("word").asText() : null;
         String sentence = jsonNode.has("sentence") ? jsonNode.get("sentence").asText() : null;
 
         System.out.println("Event: " + event);
         System.out.println("Timestamp: " + timestamp);
+        System.out.println("ID: " + id);
+        System.out.println("kindergarten_name: " + kindergartenName);
         if (word != null) {
             System.out.println("Word: " + word);
         }
@@ -145,27 +161,4 @@ public class MainController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to upload file");
         }
     }
-
-   /* @PostMapping("/upload-audio")
-    public ResponseEntity<String> uploadAudio(@RequestParam("file") MultipartFile file) {
-        try {
-            // שמירת הקובץ בתיקייה מקומית
-            String uploadDir = System.getProperty("java.io.tmpdir") + "/uploaded_audio_files/";
-            File uploadFolder = new File(uploadDir);
-            if (!uploadFolder.exists()) {
-                uploadFolder.mkdirs();
-            }
-
-            File uploadedFile = new File(uploadDir + file.getOriginalFilename());
-            file.transferTo(uploadedFile);
-
-            System.out.println("Audio file uploaded successfully: " + uploadedFile.getPath());
-            return ResponseEntity.ok("File uploaded successfully");
-        } catch (IOException e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to upload file");
-        }
-    }*/
-
-
 }
