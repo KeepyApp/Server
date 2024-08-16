@@ -8,10 +8,10 @@ public class Kindergarten {
     private String kindergartenName;
     private String parentID;
     private String password;
-    private EventsManager events;
+   // private EventsManager events;
 
     public Kindergarten() {
-        this.events = new EventsManager();
+       // this.events = new EventsManager();
     }
 
     public String getKindergartenName() {
@@ -37,11 +37,11 @@ public class Kindergarten {
     public void setPassword(String password) {
         this.password = password;
     }
-    public EventsManager getEvents() {
+  /*  public EventsManager getEvents() {
         return events;
     }
 
     public void setEvents(EventsManager events) {
         this.events = events;
-    }
+    }*/
 }

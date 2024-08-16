@@ -34,7 +34,7 @@ public class KindergartenManager {
     }
 
     public void updateKindergartenManager() {
-        DatabaseReference ref = FirebaseDatabase.getInstance("https://keppy-5ed11.firebaseio.com/").getReference("kindergartens");
+        DatabaseReference ref = FirebaseDatabase.getInstance("https://keepyapp-e4d50-default-rtdb.europe-west1.firebasedatabase.app/").getReference("kindergartens");
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

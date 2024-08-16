@@ -7,6 +7,8 @@ import com.google.firebase.messaging.Notification;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import org.springframework.stereotype.Component;
 
+import java.util.Map;
+
 @Component
 public class NotificationService {
     private final FirebaseMessaging messaging;
@@ -19,12 +21,13 @@ public class NotificationService {
         messaging = FirebaseMessaging.getInstance();
     }
 
-    public void sendNotification(String token, String title, String body) {
+    public void sendNotification(String token, String title, String body, Map<String, String> data) {
         Message message = Message.builder()
                 .setNotification(Notification.builder()
                         .setTitle(title)
                         .setBody(body)
                         .build())
+                .putAllData(data)
                 .setToken(token)
                 .build();
 

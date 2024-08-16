@@ -2,9 +2,10 @@ package com.server.maven.alert;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.server.maven.firebase.NotificationService;
-import com.server.maven.kinderGarten.Kindergarten;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
@@ -23,23 +24,33 @@ public class AlertManager {
         if (token != null) {
             String event = jsonNode.get("event").asText();
             String timestamp = jsonNode.get("timestamp").asText();
+            String id = jsonNode.get("id").asText();
+            String word = jsonNode.has("word") ? jsonNode.get("word").asText() : "";
+            String sentence = jsonNode.has("sentence") ? jsonNode.get("sentence").asText() : "";
 
-            String title = "Event Type: " + event ;
+            String title = "Event Type: " + event;
             StringBuilder body = new StringBuilder();
-            body.append("An unusual sound was detected in ").append(kindergartenName).append(" at ").append(timestamp).append(".\n");
+            body.append("An unusual sound was detected in ").append(kindergartenName).append(" at ").append(timestamp).append(".");
 
-            notificationService.sendNotification(token, title, body.toString());
+            Map<String, String> data = new HashMap<>();
+            data.put("event", event);
+            data.put("timestamp", timestamp);
+            data.put("id", id);
+            data.put("kindergarten_name", kindergartenName);
+            data.put("word", word);
+            data.put("sentence", sentence);
+
+            notificationService.sendNotification(token, title, body.toString(), data);
         } else {
             System.out.println("No token found for parent ID: " + parentId);
         }
     }
 
-
     public void addToken(String parentId, String token) {
         userTokens.put(parentId, token);
     }
 
-    public void sendNotification(String token, String title, String body) {
-        notificationService.sendNotification(token, title, body);
+    public void sendNotification(String token, String title, String body, Map<String, String> data) {
+        notificationService.sendNotification(token, title, body, data);
     }
 }

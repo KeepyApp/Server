@@ -33,7 +33,7 @@ public class MainController {
     public MainController(KindergartenManager kindergartenManager) {
         this.alertManager = new AlertManager();
         this.kindergartenManager = kindergartenManager;
-        this.firebaseDatabase = FirebaseDatabase.getInstance("https://keppy-5ed11.firebaseio.com/");
+        this.firebaseDatabase = FirebaseDatabase.getInstance("https://keepyapp-e4d50-default-rtdb.europe-west1.firebasedatabase.app/");
     }
 
     @PostConstruct
