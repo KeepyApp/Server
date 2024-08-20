@@ -6,6 +6,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.cloud.StorageClient;
 import com.server.maven.alert.AlertManager;
+import com.server.maven.analysis.AnalysisEngine;
 import com.server.maven.firebase.FirebaseInitializer;
 import com.server.maven.kinderGarten.Kindergarten;
 import com.server.maven.kinderGarten.KindergartenManager;
@@ -28,17 +29,19 @@ public class MainController {
     private final AlertManager alertManager;
     private final KindergartenManager kindergartenManager;
     private final FirebaseDatabase firebaseDatabase;
+    private final AnalysisEngine analysisEngine;
 
     @Autowired
     public MainController(KindergartenManager kindergartenManager) {
         this.alertManager = new AlertManager();
+        this.analysisEngine = new AnalysisEngine(this.alertManager ,this );
         this.kindergartenManager = kindergartenManager;
         this.firebaseDatabase = FirebaseDatabase.getInstance("https://keepyapp-e4d50-default-rtdb.europe-west1.firebasedatabase.app/");
     }
 
     @PostConstruct
     public void init() {
-        kindergartenManager.updateKindergartenManager();
+         kindergartenManager.updateKindergartenManager();
     }
 
     public static class TokenRequest {
@@ -75,9 +78,8 @@ public class MainController {
             kindergartenManager.updateKindergartenManager();
             Kindergarten kindergarten = kindergartenManager.findTheRelevantKinderGarten(kindergartenName);
             if (kindergarten != null) {
-                String parentId = kindergarten.getParentID();
-                alertManager.processEvent(parentId, kindergartenName, jsonNode);
-                saveEventToFirebase(kindergartenName, jsonNode);
+                // Pass data to the AnalysisEngine for processing
+                analysisEngine.analyzeEvent(kindergartenName, jsonNode, kindergarten.getParentID());
             }
 
         } catch (Exception e) {
@@ -85,7 +87,7 @@ public class MainController {
         }
     }
 
-    private void saveEventToFirebase(String kindergartenName, JsonNode eventData) {
+    public void saveEventToFirebase(String kindergartenName, JsonNode eventData) {
         DatabaseReference ref = firebaseDatabase.getReference("kindergartens").child(kindergartenName).child("events");
         String eventId = eventData.get("id").asText();
 

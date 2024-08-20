@@ -50,7 +50,4 @@ public class AlertManager {
         userTokens.put(parentId, token);
     }
 
-    public void sendNotification(String token, String title, String body, Map<String, String> data) {
-        notificationService.sendNotification(token, title, body, data);
-    }
 }
