@@ -40,9 +40,15 @@ public class KindergartenManager {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Map<String, Kindergarten> updatedKindergartens = new HashMap<>();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    Kindergarten kindergarten = snapshot.getValue(Kindergarten.class);
-                    if (kindergarten != null) {
-                        updatedKindergartens.put(kindergarten.getKindergartenName(), kindergarten);
+                    try {
+                        Kindergarten kindergarten = snapshot.getValue(Kindergarten.class);
+
+                        if (kindergarten != null) {
+                            updatedKindergartens.put(kindergarten.getKindergartenName(), kindergarten);
+                        }
+                    } catch (Exception e) {
+                        logger.error("Failed to load kindergarten: " + snapshot.getKey());
+                        e.printStackTrace();
                     }
                 }
                 kindergartens.putAll(updatedKindergartens);
@@ -53,5 +59,7 @@ public class KindergartenManager {
                 logger.error("DatabaseError: " + databaseError.getMessage());
             }
         });
+
+
     }
 }

@@ -1,20 +1,16 @@
 package com.server.maven.kinderGarten;
 
-import org.springframework.stereotype.Component;
+import java.util.Map;
 
-import java.util.List;
-
-@Component
 public class Kindergarten {
     private String kindergartenName;
     private String parentID;
     private String password;
+    private Map<String, EventDetail> events; // מפת אירועים
 
-    private List<String> events;
+    public Kindergarten() {}
 
-    public Kindergarten() {
-    }
-
+    // Getters and setters
     public String getKindergartenName() {
         return kindergartenName;
     }
@@ -39,12 +35,11 @@ public class Kindergarten {
         this.password = password;
     }
 
-    public List<String> getEvents() {
+    public Map<String, EventDetail> getEvents() {
         return events;
     }
 
-    public void setEvents(List<String> events) {
+    public void setEvents(Map<String, EventDetail> events) {
         this.events = events;
     }
-
 }

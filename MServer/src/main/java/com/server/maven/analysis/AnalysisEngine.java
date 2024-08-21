@@ -33,9 +33,9 @@ public class AnalysisEngine {
 
         // Define thresholds for triggering alerts
         int intensityThreshold = 1;
-        int durationThreshold = 10; // 20 seconds
+        int durationThreshold = 2; // 20 seconds
 
-        if (cryingIntensity > intensityThreshold && cryingDuration > durationThreshold) {
+        if (cryingIntensity >= intensityThreshold && cryingDuration > durationThreshold) {
             alertManager.processEvent(parentId, jsonNode.get("kindergarten_name").asText(), jsonNode);
             mainController.saveEventToFirebase(kindergartenName, jsonNode);
         } else {
