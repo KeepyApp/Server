@@ -22,6 +22,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.ConcurrentHashMap;
 
 @RestController
 public class MainController {
@@ -30,6 +33,7 @@ public class MainController {
     private final KindergartenManager kindergartenManager;
     private final FirebaseDatabase firebaseDatabase;
     private final AnalysisEngine analysisEngine;
+    private final ConcurrentHashMap<String, Integer> positiveFeedbackCounts = new ConcurrentHashMap<>();
 
     @Autowired
     public MainController(KindergartenManager kindergartenManager) {
@@ -41,7 +45,19 @@ public class MainController {
 
     @PostConstruct
     public void init() {
-         kindergartenManager.updateKindergartenManager();
+        kindergartenManager.updateKindergartenManager();
+
+        // Schedule a weekly task to send the counts to Firebase
+        Timer timer = new Timer(true);
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                sendWeeklyPositiveFeedback();
+            }
+        }, 0, 7 * 24 * 60 * 60 * 1000); // 7 days in milliseconds
+    }
+    public FirebaseDatabase getFirebaseDatabase() {
+        return this.firebaseDatabase;
     }
 
     public static class TokenRequest {
@@ -161,6 +177,44 @@ public class MainController {
         } catch (IOException e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to upload file");
+        }
+    }
+
+    @PostMapping("/process-positive-feedback")
+    public ResponseEntity<String> processPositiveFeedback(@RequestBody String jsonData) {
+        System.out.println("Received positive feedback data from Python script: " + jsonData);
+
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonNode = objectMapper.readTree(jsonData);
+
+            // Extract relevant details from the JSON
+            String kindergartenName = jsonNode.get("kindergarten_name").asText();
+
+            // Update the count of positive feedback for this kindergarten
+            int newCount = positiveFeedbackCounts.merge(kindergartenName, 1, Integer::sum);
+
+            // Process the feedback in the AnalysisEngine if needed
+            analysisEngine.processPositiveFeedback(kindergartenName, newCount);
+
+            return ResponseEntity.ok("Positive feedback processed successfully");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to process positive feedback");
+        }
+    }
+
+    // Method for the scheduled task
+    private void sendWeeklyPositiveFeedback() {
+        for (Map.Entry<String, Integer> entry : positiveFeedbackCounts.entrySet()) {
+            String kindergartenName = entry.getKey();
+            int count = entry.getValue();
+
+            // Process and send feedback through AnalysisEngine
+            analysisEngine.processPositiveFeedback(kindergartenName, count);
+
+            // Reset the count after processing
+            positiveFeedbackCounts.put(kindergartenName, 0);
         }
     }
 }

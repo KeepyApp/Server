@@ -1,9 +1,11 @@
 package com.server.maven.analysis;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.google.firebase.database.DatabaseReference;
 import com.server.maven.alert.AlertManager;
 import com.server.maven.mainController.MainController;
 import org.springframework.stereotype.Component;
+
 
 @Component
 public class AnalysisEngine {
@@ -42,4 +44,22 @@ public class AnalysisEngine {
             System.out.println("Crying event detected, but not severe enough to trigger an alert.");
         }
     }
+
+    public void processPositiveFeedback(String kindergartenName, int count) {
+        // Determine the star rating (out of 5)
+        int maxFeedbackForFiveStars = 50; // Define what count of feedback equals 5 stars
+        int starRating = Math.min(5, (int) Math.floor((double) count / maxFeedbackForFiveStars * 5));
+
+        // Logic to handle positive feedback
+        System.out.println("Processing " + count + " positive feedback(s) for kindergarten: " + kindergartenName);
+        System.out.println("Calculated star rating: " + starRating + " out of 5");
+
+        // Save the star rating to Firebase
+        DatabaseReference ref = mainController.getFirebaseDatabase().getReference("kindergartens").child(kindergartenName).child("weekly_positive_feedback");
+        ref.child("star_rating").setValueAsync(starRating);
+
+        System.out.println("Sent " + starRating + " stars to Firebase for " + kindergartenName);
+    }
+
+
 }
