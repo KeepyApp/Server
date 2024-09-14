@@ -89,7 +89,6 @@ public class MainController {
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode jsonNode = objectMapper.readTree(jsonData);
 
-            printEventDetails(jsonNode);
             String kindergartenName = jsonNode.get("kindergarten_name").asText();
             kindergartenManager.updateKindergartenManager();
             Kindergarten kindergarten = kindergartenManager.findTheRelevantKinderGarten(kindergartenName);
@@ -122,7 +121,7 @@ public class MainController {
         ref.child(eventId).setValueAsync(eventDetails);
     }
 
-    private static void printEventDetails(JsonNode jsonNode) {
+    public void printEventDetails(JsonNode jsonNode) {
         String event = jsonNode.get("event").asText();
         String timestamp = jsonNode.get("timestamp").asText();
         String id = jsonNode.get("id").asText();

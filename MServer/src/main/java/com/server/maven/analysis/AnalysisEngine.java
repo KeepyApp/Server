@@ -26,20 +26,22 @@ public class AnalysisEngine {
         } else if (eventType.equals("curse word detected") || eventType.equals("inappropriate sentence detected")) {
             alertManager.processEvent(parentId, jsonNode.get("kindergarten_name").asText(), jsonNode);
             mainController.saveEventToFirebase(kindergartenName, jsonNode);
+            mainController.printEventDetails(jsonNode);
         }
     }
 
     private void analyzeCryingEvent(String kindergartenName, JsonNode jsonNode, String parentId) {
-        int cryingIntensity = jsonNode.get("intensity").asInt();
+        double cryingIntensity = jsonNode.get("intensity").asDouble();
         int cryingDuration = jsonNode.get("duration").asInt();
 
         // Define thresholds for triggering alerts
-        int intensityThreshold = 1;
-        int durationThreshold = 2; // 20 seconds
+        double intensityThreshold = 0.3;
+        int durationThreshold = 20 ; // 20 seconds
 
-        if (cryingIntensity >= intensityThreshold && cryingDuration > durationThreshold) {
+        if (cryingIntensity > intensityThreshold && cryingDuration > durationThreshold) {
             alertManager.processEvent(parentId, jsonNode.get("kindergarten_name").asText(), jsonNode);
             mainController.saveEventToFirebase(kindergartenName, jsonNode);
+            mainController.printEventDetails(jsonNode);
         } else {
             System.out.println("Crying event detected, but not severe enough to trigger an alert.");
         }
