@@ -1,7 +1,7 @@
 # 🚀 Keepy - Server 🚀
 
 ### 📝 Overview
-The **Keepy - Server** repository is a core part of the **Keepy** system, responsible for processing audio data, managing communication between the client app, and handling event storage via Firebase. The server listens for unusual noises in kindergartens and triggers alerts when necessary.
+The **Keepy - Server** repository is a core part of the **Keepy** system, responsible for managing communication between the client app and handling event storage via Firebase. The server receives data from external systems that process audio data, manages notifications for the client, and stores event details, including metadata and audio files, in Firebase.
 
 ---
 
@@ -28,17 +28,17 @@ The **Keepy - Server** repository is a core part of the **Keepy** system, respon
 
 ## 📚 Usage
 
-1. The server processes incoming audio data from kindergartens.
-2. Detects unusual sound patterns (crying, shouting, etc.) using AI models.
-3. Sends notifications to the **Keepy Client** when an anomaly is detected.
-4. Stores events and audio data in Firebase for future reference.
+1. The server receives data from external systems or services (such as AI models) that process audio data from kindergartens.
+2. Manages event notifications and sends them to the **Keepy Client** when anomalies are detected by the external system.
+3. Stores event details, including metadata and audio files, in Firebase for future reference and analysis.
 
 ---
 
 ## 💡 Features
 
-- **Real-time Audio Processing**: Processes sound data from the kindergarten and identifies unusual patterns.
-- **Firebase Integration**: Stores sound events and notifies users through Firebase Cloud Messaging.
+- **Event Management**: Receives event data from external services and manages notifications for the client.
+- **Firebase Integration**: Stores event details and audio data, and notifies users through Firebase Cloud Messaging.
 - **Scalable Architecture**: Can be deployed to handle multiple kindergartens simultaneously.
-- **Event Logging**: All detected events are logged for analysis and future reference.
+- **Data Logging**: Logs all detected events for future analysis and reference.
+
    
